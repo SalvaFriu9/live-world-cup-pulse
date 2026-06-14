@@ -4,7 +4,7 @@
    ========================================================= */
 
 // ⚠️ PEGA AQUÍ TU API KEY DE API-FOOTBALL (https://www.api-football.com/)
-const API_KEY = "";                       // <-- EDITABLE
+const API_KEY = "36b5fe1f7057581f5e0b571f1173c55a";                       // <-- EDITABLE
 const API_HOST = "v3.football.api-sports.io";
 const API_BASE = `https://${API_HOST}`;
 const LEAGUE_ID = 1;                      // World Cup
