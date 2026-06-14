@@ -71,7 +71,7 @@ async function apiCall(endpoint, params = {}, { retries = 2, useCache = true } =
     try {
       const res = await fetch(`${API_BASE}${endpoint}?${qs}`, {
         headers: {
-  "x-apisports-key": 36b5fe1f7057581f5e0b571f1173c55a}
+  "x-apisports-key": API_KEY }
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = await res.json();
