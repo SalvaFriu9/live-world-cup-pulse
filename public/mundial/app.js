@@ -70,7 +70,8 @@ async function apiCall(endpoint, params = {}, { retries = 2, useCache = true } =
   for (let i = 0; i <= retries; i++) {
     try {
       const res = await fetch(`${API_BASE}${endpoint}?${qs}`, {
-        headers: { "x-rapidapi-key": API_KEY, "x-rapidapi-host": API_HOST },
+        headers: {
+  "x-apisports-key": 36b5fe1f7057581f5e0b571f1173c55a}
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = await res.json();
