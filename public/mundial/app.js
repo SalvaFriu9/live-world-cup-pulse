@@ -144,34 +144,30 @@ statistics: [{ team: { name: "Selección", logo: flagUrl(["ar","br","fr","es","d
 
 /* ---------- FETCH DE DATOS ---------- */
 async function loadAll() {
-try {
-const [fixtures, standings, scorers] = await Promise.all([
-API_KEY ? apiCall("/fixtures", { league: LEAGUE_ID, season: SEASON }) : Promise.resolve(DEMO.fixtures),
-API_KEY ? apiCall("/standings", { league: LEAGUE_ID, season: SEASON }).then(r => r[0]?.league?.standings || []) : Promise.resolve(DEMO.standings),
-API_KEY ? apiCall("/players/topscorers", { league: LEAGUE_ID, season: SEASON }) : Promise.resolve(DEMO.scorers),
-]);
+  try {
+    const [fixtures, standings, scorers] = await Promise.all([
+      apiCall("/fixtures", { league: LEAGUE_ID, season: SEASON }),
+      apiCall("/standings", { league: LEAGUE_ID, season: SEASON }).then(r => r[0]?.league?.standings || []),
+      apiCall("/players/topscorers", { league: LEAGUE_ID, season: SEASON }),
+    ]);
 
-detectGoalChanges(fixtures);  
-state.fixtures = fixtures;  
-state.standings = standings;  
-state.scorers = scorers;  
-state.lastUpdate = new Date();  
-state.usingDemo = !API_KEY;  
-render();
-
-} catch (e) {
-if (e.message === "NO_API_KEY") {
-state.fixtures = DEMO.fixtures;
-state.standings = DEMO.standings;
-state.scorers = DEMO.scorers;
-state.usingDemo = true;
-state.lastUpdate = new Date();
-render();
-toast("Modo demo", "Añade tu API_KEY de API-Football en app.js para datos reales.", "error");
-} else {
-toast("Error", "No se pudieron cargar los datos. Reintentando…", "error");
-console.error(e);
-}
+    detectGoalChanges(fixtures);
+    state.fixtures = fixtures?.length ? fixtures : DEMO.fixtures;
+    state.standings = standings?.length ? standings : DEMO.standings;
+    state.scorers = scorers?.length ? scorers : DEMO.scorers;
+    state.lastUpdate = new Date();
+    state.usingDemo = !fixtures?.length;
+    render();
+  } catch (e) {
+    console.error(e);
+    state.fixtures = DEMO.fixtures;
+    state.standings = DEMO.standings;
+    state.scorers = DEMO.scorers;
+    state.usingDemo = true;
+    state.lastUpdate = new Date();
+    render();
+    toast("Error de conexión", "Mostrando datos demo. Reintentando…", "error");
+  }
 }
 }
 
