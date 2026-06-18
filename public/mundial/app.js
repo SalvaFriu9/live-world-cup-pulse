@@ -3,10 +3,11 @@ MUNDIAL 2026 EN VIVO
 App vanilla JS · API-Football
 ========================================================= */
 
-// ⚠️ PEGA AQUÍ TU API KEY DE API-FOOTBALL (https://www.api-football.com/)
-const API_KEY = "1037dd920d4b22abaa5200b63a2c810e";                       // <-- EDITABLE
-const API_HOST = "v3.football.api-sports.io";
-const API_BASE = https://${API_HOST};
+// 🔒 La API_KEY de API-Football vive en el servidor (Edge Function "api-football").
+// Esta app llama a un proxy seguro en Lovable Cloud, NO directo a API-Football.
+const SUPABASE_URL = "https://xezdzskdvuntyzzyxdma.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhlemR6c2tkdnVudHl6enl4ZG1hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MTA1NTAsImV4cCI6MjA5NzM4NjU1MH0.028AyOSHpkZPnVjlGNXTZ6T1CrJ_BZdajmQdsCyB-fY";
+const API_BASE = `${SUPABASE_URL}/functions/v1/api-football`;
 const LEAGUE_ID = 1;                      // World Cup
 const SEASON = 2026;
 const REFRESH_MS = 30_000;                // Auto-refresh cada 30s
@@ -64,19 +65,20 @@ if (useCache) {
 const cached = cacheGet(key);
 if (cached) return cached;
 }
-if (!API_KEY) throw new Error("NO_API_KEY");
-
-let lastErr;
-for (let i = 0; i <= retries; i++) {
-try {
-const res = await fetch(${API_BASE}${endpoint}?${qs}, {
-headers: {
-"x-apisports-key": API_KEY }
-});
-if (!res.ok) throw new Error(HTTP ${res.status});
-const json = await res.json();
-cacheSet(key, json.response || []);
-return json.response || [];
+  let lastErr;
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const ep = endpoint.startsWith("/") ? endpoint : "/" + endpoint;
+      const res = await fetch(`${API_BASE}${ep}?${qs}`, {
+        headers: {
+          "apikey": SUPABASE_ANON_KEY,
+          "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+        }
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      cacheSet(key, json.response || []);
+      return json.response || [];
 } catch (e) {
 lastErr = e;
 await new Promise((r) => setTimeout(r, 800 * (i + 1)));
@@ -142,34 +144,30 @@ statistics: [{ team: { name: "Selección", logo: flagUrl(["ar","br","fr","es","d
 
 /* ---------- FETCH DE DATOS ---------- */
 async function loadAll() {
-try {
-const [fixtures, standings, scorers] = await Promise.all([
-API_KEY ? apiCall("/fixtures", { league: LEAGUE_ID, season: SEASON }) : Promise.resolve(DEMO.fixtures),
-API_KEY ? apiCall("/standings", { league: LEAGUE_ID, season: SEASON }).then(r => r[0]?.league?.standings || []) : Promise.resolve(DEMO.standings),
-API_KEY ? apiCall("/players/topscorers", { league: LEAGUE_ID, season: SEASON }) : Promise.resolve(DEMO.scorers),
-]);
+  try {
+    const [fixtures, standings, scorers] = await Promise.all([
+      apiCall("/fixtures", { league: LEAGUE_ID, season: SEASON }),
+      apiCall("/standings", { league: LEAGUE_ID, season: SEASON }).then(r => r[0]?.league?.standings || []),
+      apiCall("/players/topscorers", { league: LEAGUE_ID, season: SEASON }),
+    ]);
 
-detectGoalChanges(fixtures);  
-state.fixtures = fixtures;  
-state.standings = standings;  
-state.scorers = scorers;  
-state.lastUpdate = new Date();  
-state.usingDemo = !API_KEY;  
-render();
-
-} catch (e) {
-if (e.message === "NO_API_KEY") {
-state.fixtures = DEMO.fixtures;
-state.standings = DEMO.standings;
-state.scorers = DEMO.scorers;
-state.usingDemo = true;
-state.lastUpdate = new Date();
-render();
-toast("Modo demo", "Añade tu API_KEY de API-Football en app.js para datos reales.", "error");
-} else {
-toast("Error", "No se pudieron cargar los datos. Reintentando…", "error");
-console.error(e);
-}
+    detectGoalChanges(fixtures);
+    state.fixtures = fixtures?.length ? fixtures : DEMO.fixtures;
+    state.standings = standings?.length ? standings : DEMO.standings;
+    state.scorers = scorers?.length ? scorers : DEMO.scorers;
+    state.lastUpdate = new Date();
+    state.usingDemo = !fixtures?.length;
+    render();
+  } catch (e) {
+    console.error(e);
+    state.fixtures = DEMO.fixtures;
+    state.standings = DEMO.standings;
+    state.scorers = DEMO.scorers;
+    state.usingDemo = true;
+    state.lastUpdate = new Date();
+    render();
+    toast("Error de conexión", "Mostrando datos demo. Reintentando…", "error");
+  }
 }
 }
 
@@ -339,10 +337,8 @@ if (!f) return;
 $("#modal").hidden = false;
 $("#modal-body").innerHTML =   <h2 style="margin-top:0">${f.teams.home.name} ${fmt(f.goals.home)} - ${fmt(f.goals.away)} ${f.teams.away.name}</h2>   <p style="color:var(--muted);margin-top:-8px">${formatDate(f.fixture.date)} · ${formatTime(f.fixture.date)} · ${f.fixture.venue?.name || ""}</p>   <div id="modal-stats"><div class="skeleton" style="height:200px"></div></div>  ;
 
-let stats = [];
-if (API_KEY) {
-try { stats = await apiCall("/fixtures/statistics", { fixture: id }); } catch {}
-}
+  let stats = [];
+  try { stats = await apiCall("/fixtures/statistics", { fixture: id }); } catch {}
 renderStatsModal(stats, f);
 }
 
@@ -355,7 +351,7 @@ const labels = {
 "Goalkeeper Saves": "Atajadas",
 };
 if (!stats || stats.length < 2) {
-el.innerHTML = <p style="color:var(--muted);text-align:center;padding:20px">   ${API_KEY ? "Estadísticas no disponibles para este partido." : "Activa tu API_KEY para ver estadísticas en vivo (posesión, tiros, xG, tarjetas, etc.)."}   </p>;
+el.innerHTML = `<p style="color:var(--muted);text-align:center;padding:20px">Estadísticas no disponibles para este partido.</p>`;
 return;
 }
 const [home, away] = stats;
