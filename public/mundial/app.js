@@ -145,7 +145,7 @@ async function loadAll() {
   try {
     const [fixtures, standings, scorers] = await Promise.all([
       API_KEY ? apiCall("/fixtures", { league: LEAGUE_ID, season: SEASON }) : Promise.resolve(DEMO.fixtures),
-      API_KEY ? apiCall("/standings", { league: LEAGUE_ID, season: SEASON }).then(r => r[0]?.league?.standings || []) : Promise.resolve(DEMO.standings),
+      API_KEY ? apiCall("/standings", { apiCall("/fixtures", { live: "all" }).then(r => r[0]?.league?.standings || []) : Promise.resolve(DEMO.standings),
       API_KEY ? apiCall("/players/topscorers", { league: LEAGUE_ID, season: SEASON }) : Promise.resolve(DEMO.scorers),
     ]);
 
