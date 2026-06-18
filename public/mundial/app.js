@@ -337,10 +337,8 @@ if (!f) return;
 $("#modal").hidden = false;
 $("#modal-body").innerHTML =   <h2 style="margin-top:0">${f.teams.home.name} ${fmt(f.goals.home)} - ${fmt(f.goals.away)} ${f.teams.away.name}</h2>   <p style="color:var(--muted);margin-top:-8px">${formatDate(f.fixture.date)} · ${formatTime(f.fixture.date)} · ${f.fixture.venue?.name || ""}</p>   <div id="modal-stats"><div class="skeleton" style="height:200px"></div></div>  ;
 
-let stats = [];
-if (API_KEY) {
-try { stats = await apiCall("/fixtures/statistics", { fixture: id }); } catch {}
-}
+  let stats = [];
+  try { stats = await apiCall("/fixtures/statistics", { fixture: id }); } catch {}
 renderStatsModal(stats, f);
 }
 
@@ -353,7 +351,7 @@ const labels = {
 "Goalkeeper Saves": "Atajadas",
 };
 if (!stats || stats.length < 2) {
-el.innerHTML = <p style="color:var(--muted);text-align:center;padding:20px">   ${API_KEY ? "Estadísticas no disponibles para este partido." : "Activa tu API_KEY para ver estadísticas en vivo (posesión, tiros, xG, tarjetas, etc.)."}   </p>;
+el.innerHTML = `<p style="color:var(--muted);text-align:center;padding:20px">Estadísticas no disponibles para este partido.</p>`;
 return;
 }
 const [home, away] = stats;
