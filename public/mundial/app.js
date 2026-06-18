@@ -3,10 +3,11 @@ MUNDIAL 2026 EN VIVO
 App vanilla JS · API-Football
 ========================================================= */
 
-// ⚠️ PEGA AQUÍ TU API KEY DE API-FOOTBALL (https://www.api-football.com/)
-const API_KEY = "1037dd920d4b22abaa5200b63a2c810e";                       // <-- EDITABLE
-const API_HOST = "v3.football.api-sports.io";
-const API_BASE = https://${API_HOST};
+// 🔒 La API_KEY de API-Football vive en el servidor (Edge Function "api-football").
+// Esta app llama a un proxy seguro en Lovable Cloud, NO directo a API-Football.
+const SUPABASE_URL = "https://xezdzskdvuntyzzyxdma.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhlemR6c2tkdnVudHl6enl4ZG1hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MTA1NTAsImV4cCI6MjA5NzM4NjU1MH0.028AyOSHpkZPnVjlGNXTZ6T1CrJ_BZdajmQdsCyB-fY";
+const API_BASE = `${SUPABASE_URL}/functions/v1/api-football`;
 const LEAGUE_ID = 1;                      // World Cup
 const SEASON = 2026;
 const REFRESH_MS = 30_000;                // Auto-refresh cada 30s
@@ -64,19 +65,20 @@ if (useCache) {
 const cached = cacheGet(key);
 if (cached) return cached;
 }
-if (!API_KEY) throw new Error("NO_API_KEY");
-
-let lastErr;
-for (let i = 0; i <= retries; i++) {
-try {
-const res = await fetch(${API_BASE}${endpoint}?${qs}, {
-headers: {
-"x-apisports-key": API_KEY }
-});
-if (!res.ok) throw new Error(HTTP ${res.status});
-const json = await res.json();
-cacheSet(key, json.response || []);
-return json.response || [];
+  let lastErr;
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const ep = endpoint.startsWith("/") ? endpoint : "/" + endpoint;
+      const res = await fetch(`${API_BASE}${ep}?${qs}`, {
+        headers: {
+          "apikey": SUPABASE_ANON_KEY,
+          "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+        }
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      cacheSet(key, json.response || []);
+      return json.response || [];
 } catch (e) {
 lastErr = e;
 await new Promise((r) => setTimeout(r, 800 * (i + 1)));
