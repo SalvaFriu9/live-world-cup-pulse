@@ -3,7 +3,7 @@
 ==================================================== */
 
 const API_BASE = "https://worldcup26.ir/get";
-const REFRESH_MS = 30000;
+const REFRESH_MS = 300000;
 
 /* ---------- Mapeo de nombres de país a códigos ISO para flagcdn ---------- */
 const COUNTRY_CODE = {
