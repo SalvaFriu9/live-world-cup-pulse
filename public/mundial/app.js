@@ -215,11 +215,20 @@ const LIVE_STATES = ["1H","2H","HT","ET","LIVE"];
 
 async function loadStreams() {
   try {
-    const r = await fetch("./streams.json", { cache: "no-store" });
+    const r = await fetch(
+      "https://raw.githubusercontent.com/SalvaFriu9/live-world-cup-pulse/main/public/mundial/streams.json?t=" + Date.now(),
+      {
+        cache: "no-store"
+      }
+    );
     state.streams = await r.json();
-  } catch { state.streams = {}; }
+    console.log("STREAMS CARGADOS:");
+    console.log(state.streams);
+  } catch(e) {
+    console.log(e);
+    state.streams = {};
+  }
 }
-
 function statusBadge(s) {
   if (s.short === "LIVE") return `<span class="badge live"><span class="live-dot"></span>EN VIVO</span>`;
   if (s.short === "FT") return `<span class="badge ft">FINAL</span>`;
