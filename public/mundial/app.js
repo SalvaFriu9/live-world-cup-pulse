@@ -240,6 +240,7 @@ function matchCard(f) {
           <span>${away.name}</span>
         </div>
       </div>
+      ${LIVE_STATES.includes(s.short) ? `<button class="live-btn" data-live-id="${f.fixture.id}">🔴 VER EN VIVO</button>` : ""}
       <footer class="match-foot">
         <span>📅 ${fmtDate(f.fixture.date)}</span>
         ${f.fixture.venue.name ? `<span>📍 ${f.fixture.venue.name}${f.fixture.venue.city ? `, ${f.fixture.venue.city}` : ""}</span>` : ""}
