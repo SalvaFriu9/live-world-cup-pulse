@@ -289,17 +289,35 @@ img{display:block}
   .standing-table .team-cell img{width:18px;height:18px}
 }
 
-/* Live stream button */
+/* Live stream button — premium blue dark/electric gradient */
 .live-btn{
-  display:block;width:calc(100% - 24px);margin:0 12px 12px;
-  background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff;
-  border:none;border-radius:8px;padding:10px 14px;font-weight:700;
-  font-size:.9rem;letter-spacing:.3px;cursor:pointer;
-  box-shadow:0 4px 14px rgba(239,68,68,.4);
-  transition:transform .15s ease, box-shadow .15s ease;
-  animation:liveGlow 2s ease-in-out infinite;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  position:relative;overflow:visible;
+  width:85%;margin:0 auto 14px;padding:12px 18px;
+  background:linear-gradient(135deg,#0a2540 0%,#0d3b66 40%,#1a6eff 100%);
+  color:#fff;border:none;border-radius:18px;
+  font-weight:800;font-size:.95rem;letter-spacing:.4px;
+  cursor:pointer;
+  box-shadow:0 0 0 1px rgba(26,110,255,.35),0 6px 22px rgba(26,110,255,.35),0 0 30px rgba(26,110,255,.15);
+  transition:transform .2s cubic-bezier(.2,.7,.3,1), box-shadow .2s ease, filter .2s ease;
 }
-.live-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(239,68,68,.55);}
-.player-card{max-width:900px;width:95%;}
-.player-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;}
-.player-head h3{margin:0;font-size:1.05rem;}
+.live-btn:hover{transform:scale(1.03);filter:brightness(1.08);box-shadow:0 0 0 1px rgba(26,110,255,.5),0 8px 28px rgba(26,110,255,.45),0 0 40px rgba(26,110,255,.22)}
+.live-btn:active{transform:scale(.98)}
+.live-btn-icon{font-size:14px;opacity:.95}
+.live-btn-text{line-height:1}
+.live-btn-badge{
+  position:absolute;top:-6px;right:-6px;
+  display:inline-flex;align-items:center;gap:4px;
+  background:linear-gradient(135deg,#1a6eff,#0d3b66);
+  color:#fff;font-size:9px;font-weight:900;letter-spacing:.1em;
+  padding:3px 8px;border-radius:20px;
+  border:1px solid rgba(26,110,255,.45);
+  box-shadow:0 4px 14px rgba(26,110,255,.35);
+  text-shadow:0 1px 2px rgba(0,0,0,.3);
+}
+.live-btn-dot{width:5px;height:5px;border-radius:50%;background:#fff;animation:blink 1.4s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+.player-card{max-width:900px;width:95%}
+.player-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px}
+.player-head h3{margin:0;font-size:1.05rem}
