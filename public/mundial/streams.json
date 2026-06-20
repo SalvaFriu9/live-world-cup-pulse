@@ -96,16 +96,16 @@
     "m3u8": "https://nhciw.vivolatamz.org/dsports/tracks-v1a1/mono.m3u8?ip=190.175.9.119&token=6bc10d16ebd244bc64e807a6d775b8135e3cf9dd-c3-1781972640-1781918640"
   },
   "Germany vs Ivory Coast": {
-    "m3u8": ""
+    "m3u8": "https://tezfs.vivolatamz.org/dsports/tracks-v1a1/mono.m3u8?ip=190.175.9.119&token=12481fc2d9d52b1805d6e9308387c178c8f2a04f-d5-1782019665-1781965665"
   },
   "Ecuador vs Curaçao": {
-    "m3u8": ""
+    "m3u8": "https://jwzrh.vivolatamz.org/dsports/tracks-v1a1/mono.m3u8?ip=190.175.9.119&token=7baa1cbb83e2215b2e352524534914b8e1400521-13-1782019686-1781965686"
   },
   "Netherlands vs Sweden": {
-    "m3u8": ""
+    "m3u8": "https://izsup.vivolatamz.org/dsports/index.m3u8?token=16beb38dda589eae465d2e8b4d4726bc6e90c4f5-45-1782019637-1781965637&ip=190.175.9.119"
   },
   "Tunisia vs Japan": {
-    "m3u8": ""
+    "m3u8": "https://izsup.vivolatamz.org/dsports/index.m3u8?token=36ddf1fa27da5270fc31957d8ed6f9a5c11d2507-10-1782019703-1781965703&ip=190.175.9.119"
   },
   "Belgium vs Iran": {
     "m3u8": ""
