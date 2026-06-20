@@ -531,8 +531,13 @@ function toast(title, msg, type = "info") {
 
 function setupClock() {
   const el = document.getElementById("clock");
-  const tick = () => { if (el) el.textContent = new Date().toLocaleTimeString("es-AR"); };
-  tick(); setInterval(tick, 1000);
+  const tick = () => {
+    el.textContent = new Date().toLocaleTimeString("es-AR", {
+      timeZone: "America/Argentina/Buenos_Aires"
+    });
+  };
+  tick();
+  setInterval(tick, 1000);
 }
 
 function setupHeader() {
