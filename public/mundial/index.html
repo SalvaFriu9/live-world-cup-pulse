@@ -125,6 +125,16 @@
     <p>Datos vía API-Football · UI © Mundial 2026 EN VIVO</p>
   </footer>
 
+  <!-- LIVE PLAYER MODAL -->
+  <div class="modal" id="playerModal" hidden>
+    <div class="modal-bg" data-close-player></div>
+    <div class="modal-card player-card">
+      <button class="modal-close" data-close-player>✕</button>
+      <div id="player-body"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
   <script src="./app.js" defer></script>
 </body>
 </html>
