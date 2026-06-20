@@ -201,6 +201,15 @@ function isSameDay(a, b) {
   return x.getFullYear() === y.getFullYear() && x.getMonth() === y.getMonth() && x.getDate() === y.getDate();
 }
 
+const LIVE_STATES = ["1H","2H","HT","ET","LIVE"];
+
+async function loadStreams() {
+  try {
+    const r = await fetch("./streams.json", { cache: "no-store" });
+    state.streams = await r.json();
+  } catch { state.streams = {}; }
+}
+
 function statusBadge(s) {
   if (s.short === "LIVE") return `<span class="badge live"><span class="live-dot"></span>EN VIVO</span>`;
   if (s.short === "FT") return `<span class="badge ft">FINAL</span>`;
