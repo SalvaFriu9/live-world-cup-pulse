@@ -190,11 +190,21 @@ async function loadAll() {
 ==================================================== */
 function fmtTime(d) {
   const x = new Date(d);
-  return x.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
+
+  return x.toLocaleTimeString("es-AR", {
+    timeZone: "America/Argentina/Buenos_Aires",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
 }
 function fmtDate(d) {
   const x = new Date(d);
-  return x.toLocaleDateString("es-AR", { day: "2-digit", month: "short" });
+  return x.toLocaleDateString("es-AR", {
+    timeZone: "America/Argentina/Buenos_Aires",
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
 }
 function isSameDay(a, b) {
   const x = new Date(a), y = new Date(b);
