@@ -288,3 +288,18 @@ img{display:block}
   .standing-table th:nth-child(2),.standing-table .team-cell{padding-left:10px}
   .standing-table .team-cell img{width:18px;height:18px}
 }
+
+/* Live stream button */
+.live-btn{
+  display:block;width:calc(100% - 24px);margin:0 12px 12px;
+  background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff;
+  border:none;border-radius:8px;padding:10px 14px;font-weight:700;
+  font-size:.9rem;letter-spacing:.3px;cursor:pointer;
+  box-shadow:0 4px 14px rgba(239,68,68,.4);
+  transition:transform .15s ease, box-shadow .15s ease;
+  animation:liveGlow 2s ease-in-out infinite;
+}
+.live-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(239,68,68,.55);}
+.player-card{max-width:900px;width:95%;}
+.player-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;}
+.player-head h3{margin:0;font-size:1.05rem;}

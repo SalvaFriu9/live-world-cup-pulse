@@ -201,6 +201,15 @@ function isSameDay(a, b) {
   return x.getFullYear() === y.getFullYear() && x.getMonth() === y.getMonth() && x.getDate() === y.getDate();
 }
 
+const LIVE_STATES = ["1H","2H","HT","ET","LIVE"];
+
+async function loadStreams() {
+  try {
+    const r = await fetch("./streams.json", { cache: "no-store" });
+    state.streams = await r.json();
+  } catch { state.streams = {}; }
+}
+
 function statusBadge(s) {
   if (s.short === "LIVE") return `<span class="badge live"><span class="live-dot"></span>EN VIVO</span>`;
   if (s.short === "FT") return `<span class="badge ft">FINAL</span>`;
@@ -231,6 +240,7 @@ function matchCard(f) {
           <span>${away.name}</span>
         </div>
       </div>
+      ${LIVE_STATES.includes(s.short) ? `<button class="live-btn" data-live-id="${f.fixture.id}">🔴 VER EN VIVO</button>` : ""}
       <footer class="match-foot">
         <span>📅 ${fmtDate(f.fixture.date)}</span>
         ${f.fixture.venue.name ? `<span>📍 ${f.fixture.venue.name}${f.fixture.venue.city ? `, ${f.fixture.venue.city}` : ""}</span>` : ""}
@@ -411,11 +421,57 @@ function setupFilters() {
 
 function setupModal() {
   document.addEventListener("click", e => {
+    const liveBtn = e.target.closest("[data-live-id]");
+    if (liveBtn) {
+      e.stopPropagation();
+      openPlayer(liveBtn.dataset.liveId);
+      return;
+    }
     const card = e.target.closest(".match-card");
     if (card) openModal(card.dataset.id);
     if (e.target.matches("[data-close]")) closeModal();
+    if (e.target.matches("[data-close-player]")) closePlayer();
   });
-  document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") { closeModal(); closePlayer(); }
+  });
+}
+
+let _hls = null;
+function openPlayer(id) {
+  const f = state.fixtures.find(x => String(x.fixture.id) === String(id));
+  if (!f) return;
+  const key = `${f.teams.home.name} vs ${f.teams.away.name}`;
+  const stream = state.streams?.[key]?.m3u8;
+  const body = document.getElementById("player-body");
+  body.innerHTML = `
+    <div class="player-head">
+      <h3>${f.teams.home.name} vs ${f.teams.away.name}</h3>
+      <span class="badge live"><span class="live-dot"></span>EN VIVO</span>
+    </div>
+    ${stream
+      ? `<video id="liveVideo" controls autoplay playsinline style="width:100%;background:#000;border-radius:8px;"></video>`
+      : `<div class="empty" style="padding:32px;text-align:center;">Transmisión no disponible.</div>`}
+  `;
+  document.getElementById("playerModal").hidden = false;
+  if (stream) {
+    const video = document.getElementById("liveVideo");
+    if (window.Hls && window.Hls.isSupported()) {
+      _hls = new window.Hls();
+      _hls.loadSource(stream);
+      _hls.attachMedia(video);
+    } else {
+      video.src = stream;
+    }
+  }
+}
+function closePlayer() {
+  const m = document.getElementById("playerModal");
+  if (!m) return;
+  m.hidden = true;
+  if (_hls) { try { _hls.destroy(); } catch {} _hls = null; }
+  const v = document.getElementById("liveVideo");
+  if (v) { try { v.pause(); v.removeAttribute("src"); v.load(); } catch {} }
 }
 function openModal(id) {
   const f = state.fixtures.find(x => String(x.fixture.id) === String(id));
@@ -481,12 +537,13 @@ function setupHeader() {
 /* ====================================================
    INIT
 ==================================================== */
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   setupTabs();
   setupFilters();
   setupModal();
   setupClock();
   setupHeader();
+  await loadStreams();
   loadAll();
   setInterval(loadAll, REFRESH_MS);
 });
