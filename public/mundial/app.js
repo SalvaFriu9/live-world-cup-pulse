@@ -537,12 +537,13 @@ function setupHeader() {
 /* ====================================================
    INIT
 ==================================================== */
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   setupTabs();
   setupFilters();
   setupModal();
   setupClock();
   setupHeader();
+  await loadStreams();
   loadAll();
   setInterval(loadAll, REFRESH_MS);
 });
